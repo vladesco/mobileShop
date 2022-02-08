@@ -1,35 +1,27 @@
-import React, { FC, useCallback, useContext, useRef, useState } from 'react';
-import {
-    StyleSheet,
-    View,
-    FlatList,
-    Dimensions,
-    Image,
-    Text,
-    Pressable,
-    TouchableOpacity,
-} from 'react-native';
-import { AppTheme, Theme } from '../../../theme';
+import React, { FC, useCallback, useRef, useState } from 'react';
+import { StyleSheet, View, FlatList, Image, Text, TouchableOpacity, ScaledSize } from 'react-native';
+import { useTheme } from '../../../helpers/hooks';
+import { Theme } from '../../../theme';
 import { ImageCarouselPagination } from './image-carousel-pagination';
-import { CarouselImage, ImageCarouselProps } from './image-carousel.types';
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+import { CarouselImage, ImageCarouselProps } from './types';
 
 export const ImageCarousel: FC<ImageCarouselProps> = ({ images }) => {
-    const theme = useContext(AppTheme);
-    const styles = generateStylesForTheme(theme);
+    const styles = useTheme(styleGenerator);
 
     const [selectedSlideNumber, setSelectedSlideNumber] = useState<number>(0);
     const flatListRef = useRef<FlatList<CarouselImage>>(null);
-    const isFirstSlide = selectedSlideNumber === 0;
-    const isLastSlide = selectedSlideNumber === images.length - 1;
+    const firstSlideNumber = 0;
+    const lastSlideNumber = images.length - 1;
 
-    if (flatListRef.current) {
-        flatListRef.current.scrollToIndex({
-            animated: true,
-            index: selectedSlideNumber,
-        });
-    }
+    const selectPreviousSlide = useCallback(() => {
+        const isFirstSlideSelected = selectedSlideNumber === firstSlideNumber;
+        setSelectedSlideNumber(isFirstSlideSelected ? lastSlideNumber : selectedSlideNumber - 1);
+    }, [selectedSlideNumber, images.length]);
+
+    const selectNextSlide = useCallback(() => {
+        const isLastSlideSelected = selectedSlideNumber === lastSlideNumber;
+        setSelectedSlideNumber(isLastSlideSelected ? firstSlideNumber : selectedSlideNumber + 1);
+    }, [selectedSlideNumber, images.length]);
 
     const handleOnViewableItemsChanged = useCallback(
         ({ viewableItems }) => {
@@ -44,15 +36,17 @@ export const ImageCarousel: FC<ImageCarouselProps> = ({ images }) => {
         [images]
     );
 
+    if (flatListRef.current) {
+        flatListRef.current.scrollToIndex({
+            animated: true,
+            index: selectedSlideNumber,
+        });
+    }
+
     return (
         <>
             <View style={styles.container}>
-                <TouchableOpacity
-                    disabled={isFirstSlide}
-                    onPress={() =>
-                        setSelectedSlideNumber(selectedSlideNumber - 1)
-                    }
-                >
+                <TouchableOpacity onPress={selectPreviousSlide}>
                     <Text style={styles.arrowButton}>❮</Text>
                 </TouchableOpacity>
                 <FlatList
@@ -60,10 +54,7 @@ export const ImageCarousel: FC<ImageCarouselProps> = ({ images }) => {
                     renderItem={({ item }) => {
                         return (
                             <View style={styles.slide}>
-                                <Image
-                                    style={styles.slideImage}
-                                    source={{ uri: item.uri }}
-                                />
+                                <Image style={styles.slideImage} source={{ uri: item.uri }} />
                             </View>
                         );
                     }}
@@ -75,24 +66,16 @@ export const ImageCarousel: FC<ImageCarouselProps> = ({ images }) => {
                     onViewableItemsChanged={handleOnViewableItemsChanged}
                     viewabilityConfig={{ itemVisiblePercentThreshold: 100 }}
                 />
-                <TouchableOpacity
-                    disabled={isLastSlide}
-                    onPress={() =>
-                        setSelectedSlideNumber(selectedSlideNumber + 1)
-                    }
-                >
+                <TouchableOpacity onPress={selectNextSlide}>
                     <Text style={styles.arrowButton}>❯</Text>
                 </TouchableOpacity>
             </View>
-            <ImageCarouselPagination
-                totalCountOfSlides={images.length}
-                selectedSlideNumber={selectedSlideNumber}
-            />
+            <ImageCarouselPagination totalCountOfSlides={images.length} selectedSlideNumber={selectedSlideNumber} />
         </>
     );
 };
 
-const generateStylesForTheme = (theme: Theme) =>
+const styleGenerator = (theme: Theme, { width, height }: ScaledSize) =>
     StyleSheet.create({
         container: {
             flexDirection: 'row',
@@ -102,8 +85,8 @@ const generateStylesForTheme = (theme: Theme) =>
         slide: {
             flex: 1,
             justifyContent: 'center',
-            width: screenWidth - 32,
-            height: screenHeight / 2,
+            width: width - 32,
+            height: height / 2,
         },
         slideImage: {
             flex: 1,

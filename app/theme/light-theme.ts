@@ -3,8 +3,9 @@ import { Theme } from './types';
 export const lightTheme: Theme = {
     primaryColor: '#FFFFFF',
     secondaryColor: '#008ACE',
+    secondaryLightColor: '#00A8F3',
     primaryTextColor: '#4A4A4A',
-    lightTextColor: '#8F8F8F',
+    secondaryTextColor: '#8F8F8F',
     borderColor: '#C3C3C3',
-    shadowColor: '#8F8F8F',
+    backgroundColor: 'rgba(229,229,229,0.5)',
 };

@@ -2,5 +2,6 @@ import { ProductInfo } from '../../../types';
 
 export type ProductPreviewListProps = {
     products: ProductInfo[];
-    refresh: () => void;
+    onRefresh: () => void;
+    onPress: (selectedProduct: ProductInfo) => void;
 };

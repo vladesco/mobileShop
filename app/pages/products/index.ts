@@ -1,2 +1,2 @@
-export * from './main';
 export * from './product-details';
+export * from './product-gallery';

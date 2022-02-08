@@ -1,8 +1,9 @@
 export type Theme = {
     primaryColor: string;
     secondaryColor: string;
+    secondaryLightColor: string;
     primaryTextColor: string;
-    lightTextColor: string;
-    shadowColor: string;
+    secondaryTextColor: string;
     borderColor: string;
+    backgroundColor: string;
 };
