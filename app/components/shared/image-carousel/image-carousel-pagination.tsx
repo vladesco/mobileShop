@@ -1,26 +1,22 @@
-import React, { FC, useContext } from 'react';
+import React, { FC } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { AppTheme, Theme } from '../../../theme';
-import { ImageCarouselPaginationProps } from './image-carousel.types';
+import { useTheme } from '../../../helpers/hooks';
+import { Theme } from '../../../theme';
+import { ImageCarouselPaginationProps } from './types';
 
 export const ImageCarouselPagination: FC<ImageCarouselPaginationProps> = ({
     selectedSlideNumber,
     totalCountOfSlides,
 }) => {
-    const theme = useContext(AppTheme);
-    const styles = generateStylesForTheme(theme);
+    const styles = useTheme(styleGenerator);
+
     return (
         <View style={styles.container} pointerEvents="none">
             {Array.from({ length: totalCountOfSlides }).map((_, slideIndex) => {
                 return (
                     <View
                         key={slideIndex}
-                        style={[
-                            styles.dot,
-                            slideIndex === selectedSlideNumber
-                                ? styles.selected
-                                : null,
-                        ]}
+                        style={[styles.dot, slideIndex === selectedSlideNumber ? styles.selected : null]}
                     />
                 );
             })}
@@ -28,7 +24,7 @@ export const ImageCarouselPagination: FC<ImageCarouselPaginationProps> = ({
     );
 };
 
-const generateStylesForTheme = (theme: Theme) =>
+const styleGenerator = (theme: Theme) =>
     StyleSheet.create({
         container: {
             flex: 1,
@@ -40,7 +36,7 @@ const generateStylesForTheme = (theme: Theme) =>
             height: 8,
             borderRadius: 3,
             marginHorizontal: 2,
-            backgroundColor: theme.lightTextColor,
+            backgroundColor: theme.secondaryTextColor,
         },
         selected: {
             backgroundColor: theme.secondaryColor,

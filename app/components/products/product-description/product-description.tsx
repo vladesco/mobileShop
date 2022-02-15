@@ -1,49 +1,60 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AppTheme, Theme } from '../../../theme';
+import { useTheme } from '../../../helpers/hooks';
+import { Theme } from '../../../theme';
 import { PriceViewer } from '../../shared';
+import { DEFAULT_PRODUCT_COLORS } from './consts';
 import { ProductDescriptionsProps } from './types';
 
-export const ProductDescription: FC<ProductDescriptionsProps> = ({
-    product,
-}) => {
-    const theme = useContext(AppTheme);
-    const styles = generateStylesForTheme(theme);
+export const ProductDescription: FC<ProductDescriptionsProps> = ({ product, onColorSelect }) => {
+    const styles = useTheme(styleGenerator);
+    const [selectedProductColor, setSelectedProductColor] = useState<string>();
+
+    const selectColor = (selectedColor: string) => {
+        setSelectedProductColor(selectedColor);
+        onColorSelect(selectedColor);
+    };
+
+    const { name, price, compare_at_price, description } = product.attributes;
 
     return (
         <View style={styles.container}>
             <View style={styles.section}>
-                <Text style={styles.text}>{product.attributes.name}</Text>
-                <PriceViewer
-                    price={Number(product.attributes.price)}
-                    priceWithDiscount={Number(
-                        product.attributes.compare_at_price
-                    )}
-                />
+                <Text style={styles.text}>{name}</Text>
+                <PriceViewer price={Number(price)} priceWithDiscount={Number(compare_at_price)} />
             </View>
             <View style={styles.section}>
                 <Text style={[styles.text, styles.header]}>Select Color</Text>
-                <TouchableOpacity style={styles.button}>
-                    <Text>Blue</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                    {DEFAULT_PRODUCT_COLORS.map((color) => (
+                        <TouchableOpacity
+                            key={color}
+                            onPress={() => {
+                                selectColor(color);
+                            }}
+                            style={[styles.button, selectedProductColor === color && styles.pressedButton]}
+                        >
+                            <Text>{color}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
             </View>
             <View style={styles.section}>
                 <Text style={[styles.text, styles.header]}>Description</Text>
-                <Text style={styles.text}>
-                    {product.attributes.description}
-                </Text>
+                <Text style={styles.text}>{description}</Text>
             </View>
         </View>
     );
 };
 
-const generateStylesForTheme = (theme: Theme) =>
+const styleGenerator = (theme: Theme) =>
     StyleSheet.create({
         container: {
             flex: 1,
-            paddingLeft: 24,
+            paddingHorizontal: 24,
         },
         section: {
+            flexDirection: 'column',
             paddingBottom: 8,
             borderBottomWidth: 1,
             borderColor: theme.borderColor,
@@ -56,10 +67,17 @@ const generateStylesForTheme = (theme: Theme) =>
             marginVertical: 8,
             color: theme.primaryTextColor,
         },
+        buttonContainer: {
+            flexDirection: 'row',
+        },
         button: {
             borderRadius: 4,
+            marginRight: 8,
             padding: 8,
             alignSelf: 'flex-start',
             backgroundColor: theme.borderColor,
+        },
+        pressedButton: {
+            backgroundColor: theme.secondaryColor,
         },
     });

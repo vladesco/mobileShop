@@ -1,28 +1,27 @@
-import React, { FC, useContext } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { AppTheme, Theme } from '../../../theme';
+import React, { FC } from 'react';
+import { FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../../../helpers/hooks';
+import { Card } from '../../shared';
 import { ProductPreview } from '../product-preview';
 import { ProductPreviewListProps } from './types';
 
-export const ProductPreviewList: FC<ProductPreviewListProps> = ({
-    products,
-    refresh,
-}) => {
-    const theme = useContext(AppTheme);
-    const styles = generateStylesForTheme(theme);
+export const ProductPreviewList: FC<ProductPreviewListProps> = ({ products, onRefresh, onPress }) => {
+    const styles = useTheme(styleGenerator);
 
     return (
         <View style={styles.container}>
             <FlatList
                 data={products}
-                renderItem={({ item }) => <ProductPreview product={item} />}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => onPress(item)} style={styles.productCard}>
+                        <Card>
+                            <ProductPreview product={item} />
+                        </Card>
+                    </TouchableOpacity>
+                )}
                 keyExtractor={(item) => item.id}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={!Boolean(products)}
-                        onRefresh={refresh}
-                    />
-                }
+                refreshControl={<RefreshControl refreshing={!Boolean(products)} onRefresh={onRefresh} />}
+                columnWrapperStyle={{ justifyContent: 'space-around' }}
                 contentContainerStyle={styles.list}
                 numColumns={2}
             />
@@ -30,10 +29,13 @@ export const ProductPreviewList: FC<ProductPreviewListProps> = ({
     );
 };
 
-const generateStylesForTheme = (theme: Theme) =>
+const styleGenerator = () =>
     StyleSheet.create({
         container: {
             flex: 1,
+        },
+        productCard: {
+            margin: 8,
         },
         list: {
             alignItems: 'center',
