@@ -1,16 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
-import { useUnmount } from './use-unmount';
+import { useEffect, useRef } from 'react';
 
 export const useDebounce = (fn: Function, delay: number) => {
-    const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const interval = useRef<ReturnType<typeof setTimeout>>();
 
-    useUnmount(() => {
-        if (ref.current) clearTimeout(ref.current);
-    });
+    useEffect(
+        () => () => {
+            if (interval.current) clearTimeout(interval.current);
+        },
+        []
+    );
 
     return (...args: unknown[]) => {
-        if (ref.current) clearInterval(ref.current);
+        if (interval.current) clearInterval(interval.current);
 
-        ref.current = setTimeout(() => fn(...args), delay);
+        interval.current = setTimeout(() => fn(...args), delay);
     };
 };

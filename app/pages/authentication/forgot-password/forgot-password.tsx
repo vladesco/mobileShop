@@ -1,12 +1,12 @@
 import React, { FC, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../helpers/hooks';
 import { Theme } from '../../../theme';
 import { NavigationPages, WithStackNavigation } from '../../../types';
 import { CustomButton, Header, InputGroup } from '../../../components/shared';
 import { noop } from '../../../helpers/functions';
 import { PasswordInfo } from './types';
-import { DEFAULT_PASSWORD_INFO } from './consts';
+import { DEFAULT_PASSWORD_INFO, PASSWORD_INFO_VALIDATORS } from './consts';
 
 export const ForgotPassword: WithStackNavigation<FC, NavigationPages.SIGN_UP> = () => {
     const styles = useTheme(styleGenerator);
@@ -21,7 +21,11 @@ export const ForgotPassword: WithStackNavigation<FC, NavigationPages.SIGN_UP> = 
                     <Text style={styles.text}>
                         Enter your email id and we will send you an email to change the password
                     </Text>
-                    <InputGroup group={passwordInfo} onGroupChange={setPasswordInfo} />
+                    <InputGroup
+                        groupValue={passwordInfo}
+                        groupValidators={PASSWORD_INFO_VALIDATORS}
+                        onGroupChange={setPasswordInfo}
+                    />
                 </View>
 
                 <CustomButton text="Submit" onPress={noop} />

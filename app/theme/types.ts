@@ -6,4 +6,5 @@ export type Theme = {
     secondaryTextColor: string;
     borderColor: string;
     backgroundColor: string;
+    errorColor: string;
 };

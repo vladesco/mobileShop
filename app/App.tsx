@@ -1,9 +1,14 @@
-import React, { FC } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { DrawerNavigator } from './navigators';
-import { useAuthentication } from './helpers/hooks';
+import React, { FC } from 'react';
+import { Platform, UIManager } from 'react-native';
 import { SplashScreen } from './components/shared';
+import { useAuthentication } from './helpers/hooks';
+import { DrawerNavigator } from './navigators';
 import { AppThemeProvider, AuthenticationProvider } from './providers';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const AppContent: FC = () => {
     const [authenticationInfo] = useAuthentication();

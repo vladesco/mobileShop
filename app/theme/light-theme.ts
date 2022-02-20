@@ -8,4 +8,5 @@ export const lightTheme: Theme = {
     secondaryTextColor: '#8F8F8F',
     borderColor: '#C3C3C3',
     backgroundColor: 'rgba(229,229,229,0.5)',
+    errorColor: '#ed462f',
 };
