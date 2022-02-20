@@ -1,21 +1,27 @@
 import React, { FC, useCallback, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { CustomButton, Header, InputGroup } from '../../../components/shared';
 import { useAuthentication, useTheme } from '../../../helpers/hooks';
 import { authenticationService } from '../../../services';
 import { Theme } from '../../../theme';
 import { NavigationPages, WithStackNavigation } from '../../../types';
-import { DEFAULT_CREDENTIALS } from './consts';
-import { Credentials } from './types';
-
+import {
+    DEFAULT_USER_CREDENTIALS,
+    DEFAULT_USER_PASSWORDS,
+    USER_CREDENTIALS_VALIDATORS,
+    USER_PASSWORDS_VALIDATORS,
+} from './consts';
+import { UserCredentials, UserPasswords } from './types';
 export const SignUp: WithStackNavigation<FC, NavigationPages.SIGN_UP> = ({ navigation }) => {
     const styles = useTheme(styleGenerator);
     const [_, setAuthentication] = useAuthentication();
-    const [credentials, setCredentials] = useState<Credentials>(DEFAULT_CREDENTIALS);
+    const [credentials, setCredentials] = useState<UserCredentials>(DEFAULT_USER_CREDENTIALS);
+    const [passwords, setPasswords] = useState<UserPasswords>(DEFAULT_USER_PASSWORDS);
 
     const createAccount = useCallback(async () => {
-        const { firstName, lastName, email, password, confirmPassword } = credentials;
+        const { firstName, lastName, email } = credentials;
+        const { password, confirmPassword } = passwords;
 
         const { access_token, refresh_token } = await authenticationService.createAccount({
             first_name: firstName,
@@ -33,7 +39,7 @@ export const SignUp: WithStackNavigation<FC, NavigationPages.SIGN_UP> = ({ navig
         });
 
         navigation.navigate(NavigationPages.PRODUCT_GALLERY);
-    }, [credentials]);
+    }, [credentials, passwords]);
 
     return (
         <>
@@ -41,7 +47,16 @@ export const SignUp: WithStackNavigation<FC, NavigationPages.SIGN_UP> = ({ navig
             <ScrollView style={styles.container} contentContainerStyle={styles.containerContent}>
                 <Text style={styles.header}>Ecommerce Store</Text>
                 <View style={styles.inputContainer}>
-                    <InputGroup group={credentials} onGroupChange={setCredentials} />
+                    <InputGroup
+                        groupValue={credentials}
+                        onGroupChange={setCredentials}
+                        groupValidators={USER_CREDENTIALS_VALIDATORS}
+                    />
+                    <InputGroup
+                        groupValue={passwords}
+                        onGroupChange={setPasswords}
+                        groupValidators={USER_PASSWORDS_VALIDATORS}
+                    />
                 </View>
 
                 <CustomButton text="Sign up" onPress={createAccount} />

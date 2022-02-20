@@ -1,0 +1,2 @@
+export const DEFAULT_INPUT_HEIGHT = 50;
+export const DEFAULT_INPUT_FONT_SIZE = 14;

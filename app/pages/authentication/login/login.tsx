@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useState } from 'react';
-import { ScaledSize, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScaledSize, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAuthentication, useTheme } from '../../../helpers/hooks';
 import { authenticationService } from '../../../services';
 import { Theme } from '../../../theme';
 import { NavigationPages, WithStackNavigation } from '../../../types';
 import { CustomButton, Header, InputGroup } from '../../../components/shared';
-import { DEFAULT_LOGIN_INFO, DEFAULT_USER_NAME } from './consts';
+import { DEFAULT_LOGIN_INFO, DEFAULT_USER_NAME, LOGIN_INFO_VALIDATORS } from './consts';
 import { LoginInfo } from './types';
 
 export const Login: WithStackNavigation<FC, NavigationPages.LOGIN> = ({ navigation }) => {
@@ -46,7 +46,11 @@ export const Login: WithStackNavigation<FC, NavigationPages.LOGIN> = ({ navigati
             <ScrollView style={styles.container} contentContainerStyle={styles.containerContent}>
                 <Text style={styles.header}>Ecommerce Store</Text>
                 <View style={styles.inputContainer}>
-                    <InputGroup group={loginInfo} onGroupChange={setLoginInfo} />
+                    <InputGroup
+                        groupValue={loginInfo}
+                        groupValidators={LOGIN_INFO_VALIDATORS}
+                        onGroupChange={setLoginInfo}
+                    />
                     <Text style={styles.link} onPress={() => navigation.navigate(NavigationPages.FORGOT_PASSWORD)}>
                         Forgot Password?
                     </Text>
